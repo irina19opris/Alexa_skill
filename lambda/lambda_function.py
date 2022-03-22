@@ -1,32 +1,23 @@
-"""
- Copyright (C) 2020 Dabble Lab - All Rights Reserved
- You may use, distribute and modify this code under the
- terms and conditions defined in file 'LICENSE.txt', which
- is part of this source code package.
- 
- For additional copyright information please
- visit : http://dabblelab.com/copyright
- """
+# -*- coding: utf-8 -*-
 
-from ask_sdk_core.utils import is_request_type, is_intent_name
-from ask_sdk_core.dispatch_components import (AbstractRequestHandler, AbstractExceptionHandler, AbstractRequestInterceptor, AbstractResponseInterceptor)
-from ask_sdk_core.skill_builder import SkillBuilder
+# This sample demonstrates handling intents from an Alexa skill using the Alexa Skills Kit SDK for Python.
+# Please visit https://alexa.design/cookbook for additional examples on implementing slots, dialog management,
+# session persistence, api calls, and more.
+# This sample is built using the handler classes approach in skill builder.
+import logging
 import ask_sdk_core.utils as ask_utils
 
-import logging
-import json
-import requests
-import random
+from ask_sdk_core.skill_builder import SkillBuilder
+from ask_sdk_core.dispatch_components import AbstractRequestHandler
+from ask_sdk_core.dispatch_components import AbstractExceptionHandler
+from ask_sdk_core.handler_input import HandlerInput
 
-# Initializing the logger and setting the level to "INFO"
-# Read more about it here https://www.loggly.com/ultimate-guide/python-logging-basics/
+from ask_sdk_model import Response
+
 logger = logging.getLogger(__name__)
 logger.setLevel(logging.INFO)
 
 
-# Intent Handlers
-
-# This handler calls the external API and processes the JSON response to fetch the desired values
 class LaunchRequestHandler(AbstractRequestHandler):
     """Handler for Skill Launch."""
 
@@ -46,6 +37,8 @@ class LaunchRequestHandler(AbstractRequestHandler):
                 .response
         )
 
+
+        
 class UserInputIntentHandler(AbstractRequestHandler):
     def can_handle(self, handler_input):
         return ask_utils.is_intent_name("UserInputIntent")(handler_input)
@@ -53,16 +46,16 @@ class UserInputIntentHandler(AbstractRequestHandler):
     def handle(self, handler_input):
         slots = handler_input.request_envelope.request.intent.slots
         query = slots['query'].value
-
+        
         speak_output = f"User utterance is {query}"
-
+        
         return (
             handler_input.response_builder.speak(speak_output).ask(speak_output).response
         )
 
 
 class AddIntentHandler(AbstractRequestHandler):
-
+    
     def can_handle(self, handler_input):
         return ask_utils.is_intent_name("AddIntent")(handler_input)
 
@@ -73,22 +66,24 @@ class AddIntentHandler(AbstractRequestHandler):
         secondary_value = slots["secondary_value"].value
         secondary_entity = slots["secondary_entity"].value
         email = slots["email"].value
-
+        
         if email is not None:
             speak_output = f"I will add person {value} with email {email}"
         elif secondary_entity is not None and entity is not None:
             speak_output = f"I will add {entity} {value} to {secondary_entity} {secondary_value}"
-
+        
         elif secondary_value is not None and entity is not None:
             speak_output = f"I will add {entity} {value} to {secondary_value}"
         elif entity is not None:
             speak_output = f"I will add {entity} {value}"
         else:
             speak_output = f"I will add {value}"
-
+        
         return (
             handler_input.response_builder.speak(speak_output).ask(speak_output).response
         )
+
+
 
 
 class DeleteIntentHandler(AbstractRequestHandler):
@@ -99,13 +94,12 @@ class DeleteIntentHandler(AbstractRequestHandler):
         slots = handler_input.request_envelope.request.intent.slots
         value = slots["value"].value
         entity = slots["entity"].value
-
+        
         speak_output = f"I will delete {entity} {value}"
-
+        
         return (
             handler_input.response_builder.speak(speak_output).ask(speak_output).response
         )
-
 
 class TeamIntentHandler(AbstractRequestHandler):
     def can_handle(self, handler_input):
@@ -114,145 +108,171 @@ class TeamIntentHandler(AbstractRequestHandler):
     def handle(self, handler_input):
         slots = handler_input.request_envelope.request.intent.slots
         team_members = slots["team_members"].value
-
+        
         speak_output = f"Ok, I understand that your collaborators are: {team_members}"
-
+        
         return (
             handler_input.response_builder.speak(speak_output).ask(speak_output).response
         )
+        
 
+
+class HelloWorldIntentHandler(AbstractRequestHandler):
+    """Handler for Hello World Intent."""
+
+    def can_handle(self, handler_input):
+        # type: (HandlerInput) -> bool
+        return ask_utils.is_intent_name("HelloWorldIntent")(handler_input)
+
+    def handle(self, handler_input):
+        # type: (HandlerInput) -> Response
+        speak_output = "Hello World!"
+
+        return (
+            handler_input.response_builder
+                .speak(speak_output)
+                # .ask("add a reprompt if you want to keep the session open for the user to respond")
+                .response
+        )
+
+
+class HelpIntentHandler(AbstractRequestHandler):
+    """Handler for Help Intent."""
+
+    def can_handle(self, handler_input):
+        # type: (HandlerInput) -> bool
+        return ask_utils.is_intent_name("AMAZON.HelpIntent")(handler_input)
+
+    def handle(self, handler_input):
+        # type: (HandlerInput) -> Response
+        speak_output = "You can say hello to me! How can I help?"
+
+        return (
+            handler_input.response_builder
+                .speak(speak_output)
+                .ask(speak_output)
+                .response
+        )
 
 
 class CancelOrStopIntentHandler(AbstractRequestHandler):
+    """Single handler for Cancel and Stop Intent."""
+
     def can_handle(self, handler_input):
-        return (is_intent_name("AMAZON.CancelIntent")(handler_input) or
-                is_intent_name("AMAZON.StopIntent")(handler_input))
-    
+        # type: (HandlerInput) -> bool
+        return (ask_utils.is_intent_name("AMAZON.CancelIntent")(handler_input) or
+                ask_utils.is_intent_name("AMAZON.StopIntent")(handler_input))
+
     def handle(self, handler_input):
-        language_prompts = handler_input.attributes_manager.request_attributes["_"]
-        speech_output = random.choice(language_prompts["CANCEL_STOP_RESPONSE"])
-        
+        # type: (HandlerInput) -> Response
+        speak_output = "Goodbye!"
+
         return (
             handler_input.response_builder
-                .speak(speech_output)
-                .set_should_end_session(True)
+                .speak(speak_output)
                 .response
-            )
+        )
 
-class HelpIntentHandler(AbstractRequestHandler):
-    def can_handle(self, handler_input):
-        return is_intent_name("AMAZON.HelpIntent")(handler_input)
-    
-    def handle(self, handler_input):
-        language_prompts = handler_input.attributes_manager.request_attributes["_"]
-        speech_output = random.choice(language_prompts["HELP"])
-        reprompt = random.choice(language_prompts["HELP_REPROMPT"])
-        
-        return (
-            handler_input.response_builder
-                .speak(speech_output)
-                .ask(reprompt)
-                .response
-            )
 
-# This handler handles utterances that can't be matched to any other intent handler.
 class FallbackIntentHandler(AbstractRequestHandler):
-    def can_handle(self, handler_input):
-        return is_intent_name("AMAZON.FallbackIntent")(handler_input)
-    
-    def handle(self, handler_input):
-        language_prompts = handler_input.attributes_manager.request_attributes["_"]
-        speech_output = random.choice(language_prompts["FALLBACK"])
-        reprompt = random.choice(language_prompts["FALLBACK_REPROMPT"])
-        
-        return (
-            handler_input.response_builder
-                .speak(speech_output)
-                .ask(reprompt)
-                .response
-            )
+    """Single handler for Fallback Intent."""
 
-class SessionEndedRequesthandler(AbstractRequestHandler):
     def can_handle(self, handler_input):
-        return is_request_type("SessionEndedRequest")(handler_input)
-    
+        # type: (HandlerInput) -> bool
+        return ask_utils.is_intent_name("AMAZON.FallbackIntent")(handler_input)
+
     def handle(self, handler_input):
-        logger.info("Session ended with the reason: {}".format(handler_input.request_envelope.request.reason))
+        # type: (HandlerInput) -> Response
+        logger.info("In FallbackIntentHandler")
+        speech = "Hmm, I'm not sure. You can say Hello or Help. What would you like to do?"
+        reprompt = "I didn't catch that. What can I help you with?"
+
+        return handler_input.response_builder.speak(speech).ask(reprompt).response
+
+
+class SessionEndedRequestHandler(AbstractRequestHandler):
+    """Handler for Session End."""
+
+    def can_handle(self, handler_input):
+        # type: (HandlerInput) -> bool
+        return ask_utils.is_request_type("SessionEndedRequest")(handler_input)
+
+    def handle(self, handler_input):
+        # type: (HandlerInput) -> Response
+
+        # Any cleanup logic goes here.
+
         return handler_input.response_builder.response
 
-# Exception Handlers
 
-# This exception handler handles syntax or routing errors. If you receive an error stating 
-# the request handler is not found, you have not implemented a handler for the intent or 
-# included it in the skill builder below
-class CatchAllExceptionHandler(AbstractExceptionHandler):
-    
-    def can_handle(self, handler_input, exception):
-        return True
-    
-    def handle(self, handler_input, exception):
-        logger.error(exception, exc_info=True)
-        language_prompts = handler_input.attributes_manager.request_attributes["_"]
-        speech_output = language_prompts["ERROR"]
-        reprompt = language_prompts["ERROR_REPROMPT"]
-        
+class IntentReflectorHandler(AbstractRequestHandler):
+    """The intent reflector is used for interaction model testing and debugging.
+    It will simply repeat the intent the user said. You can create custom handlers
+    for your intents by defining them above, then also adding them to the request
+    handler chain below.
+    """
+
+    def can_handle(self, handler_input):
+        # type: (HandlerInput) -> bool
+        return ask_utils.is_request_type("IntentRequest")(handler_input)
+
+    def handle(self, handler_input):
+        # type: (HandlerInput) -> Response
+        intent_name = ask_utils.get_intent_name(handler_input)
+        speak_output = "You just triggered " + intent_name + "."
+
         return (
             handler_input.response_builder
-                .speak(speech_output)
-                .ask(reprompt)
+                .speak(speak_output)
+                # .ask("add a reprompt if you want to keep the session open for the user to respond")
                 .response
-            )
+        )
 
-# Interceptors
 
-# This interceptor logs each request sent from Alexa to our endpoint.
-class RequestLogger(AbstractRequestInterceptor):
+class CatchAllExceptionHandler(AbstractExceptionHandler):
+    """Generic error handling to capture any syntax or routing errors. If you receive an error
+    stating the request handler chain is not found, you have not implemented a handler for
+    the intent being invoked or included it in the skill builder below.
+    """
 
-    def process(self, handler_input):
-        logger.debug("Alexa Request: {}".format(
-            handler_input.request_envelope.request))
+    def can_handle(self, handler_input, exception):
+        # type: (HandlerInput, Exception) -> bool
+        return True
 
-# This interceptor logs each response our endpoint sends back to Alexa.
-class ResponseLogger(AbstractResponseInterceptor):
+    def handle(self, handler_input, exception):
+        # type: (HandlerInput, Exception) -> Response
+        logger.error(exception, exc_info=True)
 
-    def process(self, handler_input, response):
-        logger.debug("Alexa Response: {}".format(response))
+        speak_output = "Sorry, I had trouble doing what you asked. Please try again."
 
-# This interceptor is used for supporting different languages and locales. It detects the users locale,
-# loads the corresponding language prompts and sends them as a request attribute object to the handler functions.
-class LocalizationInterceptor(AbstractRequestInterceptor):
+        return (
+            handler_input.response_builder
+                .speak(speak_output)
+                .ask(speak_output)
+                .response
+        )
 
-    def process(self, handler_input):
-        locale = handler_input.request_envelope.request.locale
-        logger.info("Locale is {}".format(locale))
-        
-        try:
-            with open("languages/"+str(locale)+".json") as language_data:
-                language_prompts = json.load(language_data)
-        except:
-            with open("languages/"+ str(locale[:2]) +".json") as language_data:
-                language_prompts = json.load(language_data)
-        
-        handler_input.attributes_manager.request_attributes["_"] = language_prompts
 
-# Skill Builder
-# Define a skill builder instance and add all the request handlers,
-# exception handlers and interceptors to it.
+# The SkillBuilder object acts as the entry point for your skill, routing all request and response
+# payloads to the handlers above. Make sure any new handlers or interceptors you've
+# defined are included below. The order matters - they're processed top to bottom.
+
 
 sb = SkillBuilder()
+
 sb.add_request_handler(LaunchRequestHandler())
+sb.add_request_handler(HelloWorldIntentHandler())
 sb.add_request_handler(UserInputIntentHandler())
 sb.add_request_handler(AddIntentHandler())
 sb.add_request_handler(DeleteIntentHandler())
-sb.add_request_handler(CancelOrStopIntentHandler())
+sb.add_request_handler(TeamIntentHandler())
+
 sb.add_request_handler(HelpIntentHandler())
+sb.add_request_handler(CancelOrStopIntentHandler())
 sb.add_request_handler(FallbackIntentHandler())
-sb.add_request_handler(SessionEndedRequesthandler())
+sb.add_request_handler(SessionEndedRequestHandler())
+sb.add_request_handler(IntentReflectorHandler())  # make sure IntentReflectorHandler is last so it doesn't override your custom intent handlers
 
 sb.add_exception_handler(CatchAllExceptionHandler())
-
-sb.add_global_request_interceptor(LocalizationInterceptor())
-sb.add_global_request_interceptor(RequestLogger())
-sb.add_global_response_interceptor(ResponseLogger())
 
 lambda_handler = sb.lambda_handler()

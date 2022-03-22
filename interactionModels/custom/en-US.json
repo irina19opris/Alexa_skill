@@ -1,56 +1,305 @@
 {
-  "interactionModel": {
-    "languageModel": {
-      "invocationName": "template two",
-      "intents": [
-        {
-          "name": "AMAZON.NavigateHomeIntent",
-          "samples": []
-        },
-        {
-          "name": "AMAZON.CancelIntent",
-          "samples": []
-        },
-        {
-          "name": "AMAZON.HelpIntent",
-          "samples": []
-        },
-        {
-          "name": "AMAZON.StopIntent",
-          "samples": []
-        },
-        {
-          "name": "AMAZON.FallbackIntent",
-          "samples": []
-        },
-        {
-          "name": "GetRemoteDataIntent",
-          "slots": [],
-          "samples": [
-            "how many astronauts are there on the international space station",
-            "currently how many astronauts are there on the international space station",
-            "currently how many astronauts are there in space",
-            "how many astronauts are there in space currently",
-            "how many astronauts are there in space",
-            "how many people are in space",
-            "how many people are in space now",
-            "how many people are currently in space",
-            "how many humans are in space",
-            "how many humans are in space now",
-            "how many humans are currently in space",
-            "how many astronauts are in space",
-            "how many astronauts are in space now",
-            "how many astronauts are currently in space"
-          ]
+    "interactionModel": {
+        "languageModel": {
+            "invocationName": "endava database assistant",
+            "intents": [
+                {
+                    "name": "AMAZON.CancelIntent",
+                    "samples": []
+                },
+                {
+                    "name": "AMAZON.HelpIntent",
+                    "samples": []
+                },
+                {
+                    "name": "AMAZON.StopIntent",
+                    "samples": []
+                },
+                {
+                    "name": "HelloWorldIntent",
+                    "slots": [],
+                    "samples": [
+                        "hello",
+                        "how are you",
+                        "say hi world",
+                        "say hi",
+                        "hi",
+                        "say hello world",
+                        "say hello"
+                    ]
+                },
+                {
+                    "name": "AMAZON.NavigateHomeIntent",
+                    "samples": []
+                },
+                {
+                    "name": "AMAZON.FallbackIntent",
+                    "samples": []
+                },
+                {
+                    "name": "AddIntent",
+                    "slots": [
+                        {
+                            "name": "entity",
+                            "type": "ENTITYTYPE"
+                        },
+                        {
+                            "name": "value",
+                            "type": "VALUETYPE"
+                        },
+                        {
+                            "name": "secondary_value",
+                            "type": "VALUETYPE"
+                        },
+                        {
+                            "name": "secondary_entity",
+                            "type": "ENTITYTYPE"
+                        },
+                        {
+                            "name": "email",
+                            "type": "EMAILTYPE"
+                        }
+                    ],
+                    "samples": [
+                        "Add person {value} with email {email}",
+                        "Add {value} to {entity}",
+                        "Add {value} to {secondary_entity} {secondary_value}",
+                        "Add {entity} {value} to {secondary_entity} {secondary_value}",
+                        "Add {value}",
+                        "Add {entity} {value} to {secondary_value}",
+                        "Add {entity} {value} to the database",
+                        "Add {entity} {value}"
+                    ]
+                },
+                {
+                    "name": "DeleteIntent",
+                    "slots": [
+                        {
+                            "name": "entity",
+                            "type": "ENTITYTYPE"
+                        },
+                        {
+                            "name": "value",
+                            "type": "VALUETYPE"
+                        }
+                    ],
+                    "samples": [
+                        "Delete {value} from {entity}",
+                        "Delete {entity} {value} from database",
+                        "Delete {entity} {value}"
+                    ]
+                },
+                {
+                    "name": "TeamIntent",
+                    "slots": [
+                        {
+                            "name": "team_members",
+                            "type": "AMAZON.SearchQuery"
+                        }
+                    ],
+                    "samples": [
+                        "My team mates are {team_members}",
+                        "i also work with {team_members}",
+                        "I work with {team_members}",
+                        "My collaborators are {team_members}",
+                        "These are my collaborators {team_members}"
+                    ]
+                },
+                {
+                    "name": "UserInputIntent",
+                    "slots": [
+                        {
+                            "name": "query",
+                            "type": "AMAZON.SearchQuery"
+                        }
+                    ],
+                    "samples": [
+                        " {query}"
+                    ]
+                }
+            ],
+            "types": [
+                {
+                    "name": "ENTITYTYPE",
+                    "values": [
+                        {
+                            "name": {
+                                "value": "management unit"
+                            }
+                        },
+                        {
+                            "name": {
+                                "value": "title"
+                            }
+                        },
+                        {
+                            "name": {
+                                "value": "person"
+                            }
+                        },
+                        {
+                            "name": {
+                                "value": "skill"
+                            }
+                        },
+                        {
+                            "name": {
+                                "value": "discipline"
+                            }
+                        }
+                    ]
+                },
+                {
+                    "name": "VALUETYPE",
+                    "values": [
+                        {
+                            "name": {
+                                "value": "Head of Architecture"
+                            }
+                        },
+                        {
+                            "name": {
+                                "value": "Head of Arch"
+                            }
+                        },
+                        {
+                            "name": {
+                                "value": "Cosmin Sontu"
+                            }
+                        },
+                        {
+                            "name": {
+                                "value": "Docker"
+                            }
+                        },
+                        {
+                            "name": {
+                                "value": "Dragos"
+                            }
+                        },
+                        {
+                            "name": {
+                                "value": "Marinel"
+                            }
+                        },
+                        {
+                            "name": {
+                                "value": "Attila"
+                            }
+                        },
+                        {
+                            "name": {
+                                "value": "Senior Architect"
+                            }
+                        },
+                        {
+                            "name": {
+                                "value": "Senior Developer"
+                            }
+                        },
+                        {
+                            "name": {
+                                "value": "Dragos Constantin Ciocan"
+                            }
+                        },
+                        {
+                            "name": {
+                                "value": "Attila Szasz"
+                            }
+                        },
+                        {
+                            "name": {
+                                "value": "Marinel Marian"
+                            }
+                        },
+                        {
+                            "name": {
+                                "value": "Development"
+                            }
+                        },
+                        {
+                            "name": {
+                                "value": "Architecture"
+                            }
+                        },
+                        {
+                            "name": {
+                                "value": "ISD"
+                            }
+                        },
+                        {
+                            "name": {
+                                "value": "TGD"
+                            }
+                        },
+                        {
+                            "name": {
+                                "value": "Developer"
+                            }
+                        },
+                        {
+                            "name": {
+                                "value": "Architect"
+                            }
+                        },
+                        {
+                            "name": {
+                                "value": "C#"
+                            }
+                        },
+                        {
+                            "name": {
+                                "value": "Bogdan"
+                            }
+                        },
+                        {
+                            "name": {
+                                "value": "Cosmin"
+                            }
+                        }
+                    ]
+                },
+                {
+                    "name": "EMAILTYPE",
+                    "values": [
+                        {
+                            "name": {
+                                "value": "ioan.florian@endava.com"
+                            }
+                        },
+                        {
+                            "name": {
+                                "value": "dan.tarba@endava.com"
+                            }
+                        },
+                        {
+                            "name": {
+                                "value": "liviu.istrate@endava.com"
+                            }
+                        },
+                        {
+                            "name": {
+                                "value": "attila.szasz@endava.com"
+                            }
+                        },
+                        {
+                            "name": {
+                                "value": "marinel.marian@endava.com"
+                            }
+                        },
+                        {
+                            "name": {
+                                "value": "bogdanemil.pacurar@endava.com"
+                            }
+                        },
+                        {
+                            "name": {
+                                "value": "irina.opris1@endava.com"
+                            }
+                        }
+                    ]
+                }
+            ]
         }
-      ],
-      "types": [],
-      "modelConfiguration": {
-        "fallbackIntentSensitivity": {
-          "level": "LOW"
-        }
-      }
     }
-  },
-  "version": "3"
 }
